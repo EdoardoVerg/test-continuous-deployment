@@ -1,0 +1,26 @@
+steps:
+  # Step 1: Build dell'immagine e push su Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build', '-t', 'europe-west3-docker.pkg.dev/soft-analytics-gcp/cloud-run-source-deploy/test-continuous-deployment',
+      '.'
+    ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push', 'europe-west3-docker.pkg.dev/soft-analytics-gcp/cloud-run-source-deploy/test-continuous-deployment'
+    ]
+
+  # Step 2: Deploy su Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [
+      'run', 'deploy', 'test-continuous-deployment',
+      '--image', 'europe-west3-docker.pkg.dev/soft-analytics-gcp/cloud-run-source-deploy/test-continuous-deployment',
+      '--region', 'europe-west3',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
+
+timeout: 1200s
+
