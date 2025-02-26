@@ -1,9 +1,10 @@
-import functions_framework
+from flask import Flask, request
 
-@functions_framework.http
-def hello_http(request):
-    """HTTP Cloud Function.
-    """
+app = Flask(__name__)
+
+@app.route("/", methods=["GET", "POST"])
+def hello_http():
+    """Cloud Run HTTP function."""
     request_json = request.get_json(silent=True)
     request_args = request.args
 
@@ -14,5 +15,11 @@ def hello_http(request):
     else:
         name = 'Cloud Run'
 
-    return 'Hello {}! Deployment Test Successful, 222!'.format(name)
+    return f"Hello {name}! Deployment Test Successful, 222!"
+
+if __name__ == "__main__":
+    import os
+    port = int(os.getenv("PORT", 8080))  # Ensure the app runs on the correct port
+    app.run(host="0.0.0.0", port=port)
+
 
